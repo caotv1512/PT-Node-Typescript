@@ -6,13 +6,17 @@ const taskService = new TaskService();
 export default class TaskController {
   constructor() {}
 
-  getAll(req: Request, res: Response) {
-    const data = taskService.getAll();
+  async getAll(req: Request, res: Response) {
+    const data = await taskService.getAll();
+    console.log(data);
     res.send(data);
   }
 
-  create(req: Request, res: Response) {
-    const data = taskService.create(req, res);
+  async create(req: Request, res: Response) {
+    const body = req.body;
+    const data = await taskService.create(body);
+    console.log(data);
+    
     if (!data) {
       res.status(404).send({ message: "Data not found" });
     }

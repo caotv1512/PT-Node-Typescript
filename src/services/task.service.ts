@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
+import { OkPacket } from "mysql2";
 import { Task } from "../interfaces/task.interface";
+import connection  from "../db";
 const tasks: Task[] = [
   {
     id: 1,
@@ -21,22 +23,26 @@ const tasks: Task[] = [
   },
 ];
 export default class TaskService {
-  getAll() {
-    return tasks;
+  getAll(): Promise<Task[]>  {
+    const query:string = "SELECT * FROM employees";
+    return new Promise((resolve, reject) => {
+      connection.query<any[]>(query, (err, res) => {
+        if (err) reject(err);
+        else resolve(res);
+      });
+    });
   }
 
-  create(req: Request, res: Response) {
-    const {title, description} = req.body;
-    if (!title || !description) {
-        return 
-    }
-    const task: Task = {
-      id: tasks.length + 1,
-      title: req.body.title,
-      description: req.body.description,
-      completed: false,
-    };
-    tasks.push(task);
-    return task;
+  create(tutorial : any) {
+    return new Promise((resolve, reject) => {
+      connection.query<OkPacket>(
+        "INSERT INTO employees (first_name, last_name, email) VALUES(?,?,?)",
+        [tutorial.first_name, tutorial.last_name, tutorial.email ],
+        (err, res) => {
+          if (err) reject(err);
+          else resolve(tutorial!)
+        }
+      );
+    });
   }
 }
